@@ -1,22 +1,56 @@
-from pydantic import BaseModel
+from datetime import datetime
+from typing import List, Optional
 
-class monthlyBudget(BaseModel):
+from pydantic import BaseModel, ConfigDict
+
+
+class BudgetItemBase(BaseModel):
+    name: str
+    percentage: float
+    parent_id: Optional[int] = None
+
+
+class BudgetItemCreate(BudgetItemBase):
+    budget_id: Optional[int] = None
+
+
+class BudgetItem(BudgetItemBase):
     id: int
+    budget_id: int
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class MonthlyBudgetBase(BaseModel):
     year: int
     month: str
     total_amount: float
-    
-class budgetItem(BaseModel):
+
+
+class MonthlyBudgetCreate(MonthlyBudgetBase):
+    pass
+
+
+class MonthlyBudget(MonthlyBudgetBase):
     id: int
-    name: str
-    budget_id: int
-    parent_id: int
-    percentage: float
-    
-class User(BaseModel):
-    id: int
+    user_id: int
+    budget_items: List[BudgetItem] = []
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class UserBase(BaseModel):
     username: str
     email: str
-    monthlY_budgets: list[monthlyBudget]
-    budge_iItems: list[budgetItem]
-    
+
+
+class UserCreate(UserBase):
+    senha: str
+
+
+class User(UserBase):
+    id: int
+    created_at: datetime
+    monthly_budgets: List[MonthlyBudget] = []
+
+    model_config = ConfigDict(from_attributes=True)
